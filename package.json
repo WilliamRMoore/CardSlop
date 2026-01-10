@@ -1,0 +1,22 @@
+{
+  "name": "card-slop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "node esbuild.config.mjs",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "esbuild": "^0.20.0",
+    "esbuild-plugin-copy": "^2.1.1",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.4.5"
+  }
+}
