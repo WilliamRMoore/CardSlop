@@ -1,4 +1,4 @@
-import { NewDeck, deckConfig } from '../game/engine/deck';
+import { NewDeck, deckConfig } from '../game/core/deck';
 
 describe('Deck', () => {
   const deckConfig: deckConfig = {
