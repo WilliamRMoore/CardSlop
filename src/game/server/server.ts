@@ -122,7 +122,7 @@ type drawResponse = {
 };
 
 type judgeHandResp = {
-  respType: 'judgeingHandResp';
+  respType: 'judgeing_Hand_Resp';
   data: { judgeId: string; memCardIds: number[] };
 };
 
@@ -321,7 +321,7 @@ export class CSServer {
           this.memeCardJudgeHand.push(this.memeDeck.cards.pop()!);
         }
         this.callBack({
-          respType: 'judgeingHandResp',
+          respType: 'judgeing_Hand_Resp',
           data: {
             judgeId: msg.data.playerId,
             memCardIds: this.memeCardJudgeHand.map((c) => c.id),
