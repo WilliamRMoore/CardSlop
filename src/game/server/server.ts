@@ -514,6 +514,7 @@ export class CSServer {
     this.putCapCardDiscardsBackInDeck();
     this.putMemeCardDiscardsBackInDeck();
     this.putHandsBackInDeck();
+    this.putWonCardsBackInDeck();
     this.shuffle();
     this.deal();
     this.gameState = 'ready';
@@ -636,5 +637,13 @@ export class CSServer {
   private putJudgeHandBackInDeck() {
     this.memeDeck.cards.unshift(...this.memeCardJudgeHand);
     this.memeCardJudgeHand.length = 0;
+  }
+
+  private putWonCardsBackInDeck() {
+    const wonHands = this.cardsWon.values();
+    wonHands.forEach((cards) => {
+      this.memeDeck.cards.unshift(...cards);
+      cards.length = 0;
+    });
   }
 }
