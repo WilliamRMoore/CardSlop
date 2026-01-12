@@ -5,44 +5,53 @@ export type deckConfig = {
   capCardTexts: string[];
 };
 
-export type deck = {
-  readonly memCards: memeCard[];
-  readonly capCards: capCard[];
-  shuffle(): void;
-};
+export type captionCardDeck = CaptionCardDeck;
+export type memeCardDeck = MemeCardDeck;
 
-class Deck implements deck {
-  readonly memCards: memeCard[];
-  readonly capCards: capCard[];
-  constructor(deckConfig: deckConfig) {
-    this.memCards = deckConfig.memCardImages.map((image, index) =>
-      NewMemeCard(index, image)
-    );
-    this.capCards = deckConfig.capCardTexts.map((text, index) =>
-      NewCapCard(index, text)
-    );
-  }
-
-  /**
-   * Shuffles both the meme and caption card decks using the Fisher-Yates algorithm.
-   */
+class CaptionCardDeck {
+  readonly cards: capCard[] = [];
   public shuffle() {
-    this._shuffleArray(this.memCards);
-    this._shuffleArray(this.capCards);
+    this._shuffleArray(this.cards);
   }
-
-  /**
-   * Shuffles an array in-place using the Fisher-Yates (aka Knuth) shuffle.
-   * @param array The array to be shuffled.
-   */
-  private _shuffleArray<T extends card>(array: T[]): void {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
+  private _shuffleArray(array: capCard[]): void {
+    ShuffleArray(array);
   }
 }
 
-export function NewDeck(deckConfig: deckConfig): deck {
-  return new Deck(deckConfig);
+class MemeCardDeck {
+  readonly cards: memeCard[] = [];
+  public shuffle() {
+    this._shuffleArray(this.cards);
+  }
+  private _shuffleArray(array: memeCard[]): void {
+    ShuffleArray(array);
+  }
+}
+
+export function ShuffleArray<T extends card>(array: T[]): void {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+export function NewCaptionCardDeck(captions: string[]): captionCardDeck {
+  const d = new CaptionCardDeck();
+  captions.map((t, i) => NewCapCard(i, t)).forEach((c) => d.cards.push(c));
+  return d;
+}
+
+export function EmptyCaptionCardDeck(): captionCardDeck {
+  return new CaptionCardDeck();
+}
+
+export function NewMemeCardDeck(memes: string[]): memeCardDeck {
+  const d = new MemeCardDeck();
+  const cards = memes.map((t, i) => NewMemeCard(i, t));
+  cards.forEach((c) => d.cards.push(c));
+  return d;
+}
+
+export function EmptyMemeCardDeck(): memeCardDeck {
+  return new MemeCardDeck();
 }
