@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Slop</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div id="game-window">
+    <div id="game-header">
+      <div class="header-player-points" id="player"></div>
+    </div>
+    <div id="game-board">
+      <div class="game-screen" id="menu-screen">
+        <div>
+          <button id="join-btn">Join Game</button>
+          <button id="create-btn">Create Game</button>
+        </div>
+      </div>
+      <div class="game-screen" hidden="true" id="join-screen">
+        <label for="lobby-id">Enter Lobby Code:</label>
+        <input id="lobby-id-input" type="text">
+        <label for="player-id-input">Enter Player Name:</label>
+        <input type="text" hidden="true" id="player-id-input">Input Player Name</input>
+        <button disabled="true" id="join-lobby-btn">Join</button>
+        <div id="joining-spinner" hidden="true">
+          joining...
+        </div>
+        <div id="join-error" hidden="true">
+          error message goes here
+        </div>
+      </div>
+      <div class="game-screen" hidden="true" id="create-screen">
+        <div>
+          <label for="host-id-input">Enter Host Name:</label>
+          <input type="text" id="host-id-input">
+          <button disabled="true" id="create-lobby-btn">Create Lobby</button>
+        </div>
+      </div>
+      <div class="game-screen" hidden="true" id="wait-others-screen">
+        <div hidden="true" id="host-wait-controls">
+          <label for="lobby-id-input">Lobby Connect Code:</label>
+          <input type="text" disabled="true" placeholder="..." id="lobby-id-input">
+          <button id="start-game-btn">Start Game</button>
+        </div>
+        <div>
+          waiting for others... <span id="player-join-count"></span>
+        </div>
+      </div>
+      <div class="game-screen" hidden="true" id="game-player-screen">
+        <div hidden="true" id="judge-game-view">
+          <div id="judge-hand"></div>
+          <div>
+            <button disabled="true" id="confirm-judge-card-btn">Select</button>
+          </div>
+        </div>
+        <div hidden="true" id="player-game-view">
+          <div id="player-hand"></div>
+          <div id="confirm-cap-card" >
+            <button disabled="true" id="confirm-cap-card-btn">Play</button>
+          </div>
+        </div>
+      </div>
+      <div class="game-screen" hidden="true" id="game-won-screen">
+        <div id="winning-player-id">
+        </div>
+        <div>
+          <button>Play Again</button>
+        </div>
+      </div>
+      <div class="game-screen" hidden="true" id="game-ready-screen">
+        <div> waiting for others... <span id="player-ready-count"></span></div>
+      </div>
+    </div>
+    <div id="game-footer"></div>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>

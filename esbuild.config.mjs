@@ -33,6 +33,8 @@ const copyAssetsPlugin = {
             console.log(`Copied deck: ${deck.name}`);
           }
         }
+        await fs.copyFile('src/index.html', 'public/index.html');
+        console.log('Copied index.html');
         console.log('Asset copying complete.');
 
         const tsContent = `export const deckNames: string[] = ${JSON.stringify(deckNames)};\n`;
