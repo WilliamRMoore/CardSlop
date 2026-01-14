@@ -79,7 +79,7 @@ export const joinElements = {
 //wait-screen elements
 const hostWaitControls = getEl('host-wait-controls') as HTMLDivElement;
 const playerJoinCount = getEl('player-join-count') as HTMLSpanElement;
-const lobbyCodeDisplay = getEl('lobby-id-input') as HTMLInputElement;
+const lobbyCodeDisplay = getEl('lobby-id-display') as HTMLSpanElement;
 const startGameBtn = getEl('start-game-btn') as HTMLButtonElement;
 
 export const waitElements = {

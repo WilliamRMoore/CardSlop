@@ -66,7 +66,7 @@ export class Renderer {
   private waitScreenEnter() {
     if (this.isHost) {
       waitElements.hostWaitControls.hidden = false;
-      waitElements.lobbyCodeDisplay.value = this.connectCode!;
+      waitElements.lobbyCodeDisplay.innerText = this.connectCode!;
     }
     waitElements.playerJoinCount.innerText =
       this.client!.players.length.toString();
@@ -95,7 +95,7 @@ export class Renderer {
   private waitScreenExit() {
     waitElements.hostWaitControls.hidden = true;
     waitElements.playerJoinCount.innerText = '0';
-    waitElements.lobbyCodeDisplay.value = '';
+    waitElements.lobbyCodeDisplay.innerText = '';
   }
 
   private changeScreen(screen: HTMLDivElement) {
@@ -135,6 +135,7 @@ export class Renderer {
     const connectCode = 'We will get this value from peer js';
     const s = new CSServer(this.dc, this.clientUpdatecallBack, hostName);
     this.client = new CSClient(hostName, s, this.clientUpdatecallBack);
+    this.client.hostId = hostName;
     this.connectCode = connectCode;
     createElements.createLobbyBtn.disabled = true;
     this.client.ServerWait();
