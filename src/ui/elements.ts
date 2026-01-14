@@ -53,7 +53,7 @@ export const menuElements = {
 };
 
 //create-screen elements
-const hostNameInput = getEl('host-name-input') as HTMLInputElement;
+const hostNameInput = getEl('host-id-input') as HTMLInputElement;
 const createLobbyBtn = getEl('create-lobby-btn') as HTMLButtonElement;
 
 export const createElements = {

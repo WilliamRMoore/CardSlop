@@ -59,12 +59,11 @@ export class CSClient {
     });
   }
 
-  public Join(server: ICSServer) {
-    this.server = server;
+  public Join() {
     this.server.PostMessage({
       msgType: 'plr_join',
       data: {
-        playerJoiningId: 'this.myId',
+        playerJoiningId: this.myId,
       },
     });
   }

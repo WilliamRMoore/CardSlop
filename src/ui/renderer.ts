@@ -29,13 +29,13 @@ export class Renderer {
 
   public SetUpListeners() {
     menuElements.joinGameBtn.addEventListener('click', () => {
-      this.GoToJoinLobby();
+      this.GoToJoinLobbyScreen();
     });
     menuElements.createGameBtn.addEventListener('click', () => {
-      this.GoToCreateLobby();
+      this.GoToCreateLobbyScreen();
     });
 
-    createElements.hostNameInput.addEventListener('change', () => {
+    createElements.hostNameInput.addEventListener('input', () => {
       if (createElements.hostNameInput.value !== '') {
         createElements.createLobbyBtn.disabled = false;
       } else {
@@ -46,7 +46,7 @@ export class Renderer {
       this.CreateLobby();
     });
 
-    joinElements.lobbyCodeInput.addEventListener('change', () => {
+    joinElements.lobbyCodeInput.addEventListener('input', () => {
       this.connectCode = joinElements.lobbyCodeInput.value;
       if (this.connectCode !== '' && this.client !== undefined) {
         joinElements.joinLobbyBtn.disabled = false;
@@ -144,11 +144,11 @@ export class Renderer {
     this.changeScreen(this.screens.menuScreen);
   }
 
-  public GoToCreateLobby() {
+  public GoToCreateLobbyScreen() {
     this.changeScreen(this.screens.createScreen);
   }
 
-  public GoToJoinLobby() {
+  public GoToJoinLobbyScreen() {
     this.changeScreen(this.screens.joinScreen);
   }
 
@@ -166,11 +166,13 @@ export class Renderer {
     switch (res.respType) {
       case 'wait_for_players':
         this.changeScreen(this.screens.waitScreen);
+        waitElements.playerJoinCount.innerText =
+          res.data.playersInLobby.length.toString();
         break;
       case 'plr_join_resp':
         this.changeScreen(this.screens.waitScreen);
         waitElements.playerJoinCount.innerText =
-          this.client!.players.length.toString();
+          res.data.playersInLobby.length.toString();
         break;
       case 'startResp':
         this.changeScreen(this.screens.playGameScreen);

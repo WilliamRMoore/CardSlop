@@ -96,7 +96,7 @@ export type csResponse =
 
 type waitResp = {
   respType: 'wait_for_players';
-  data: undefined;
+  data: { playersInLobby: playerId[] };
 };
 
 type playCardResp = {
@@ -165,6 +165,7 @@ type errorCode =
   | 'card_not_in_judging_pile'
   | 'game_not_in_roundWinnerSelected_state'
   | 'you_are_already_ready'
+  | 'player_already_in_lobby'
   | 'you_are_not_the_host';
 
 export type invalidRequestRsep = {
@@ -253,7 +254,10 @@ export class CSServer implements ICSServer {
         }
         if (this.gameState === 'ready' || this.gameState === 'never_started') {
           this.gameState = 'waiting';
-          this.callBack({ respType: 'wait_for_players', data: undefined });
+          this.callBack({
+            respType: 'wait_for_players',
+            data: { playersInLobby: this.playerIds },
+          });
           break;
         }
         this.callBack({
@@ -273,6 +277,16 @@ export class CSServer implements ICSServer {
               playerId: msg.data.playerJoiningId,
               message: 'Game not in waiting state',
               error: 'not_in_waiting_state',
+            },
+          });
+        }
+        if (this.playerIds.includes(msg.data.playerJoiningId)) {
+          this.callBack({
+            respType: 'invalid_request',
+            data: {
+              playerId: msg.data.playerJoiningId,
+              message: 'Player already in lobby',
+              error: 'player_already_in_lobby',
             },
           });
         }
