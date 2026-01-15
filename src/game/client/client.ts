@@ -223,4 +223,8 @@ export class CSClient {
     switch (response.respType) {
     }
   }
+
+  public get _db_server(): ICSServer {
+    return this.server;
+  }
 }

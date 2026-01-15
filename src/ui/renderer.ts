@@ -19,7 +19,7 @@ export class Renderer {
   private screens = gameScreens;
   private activeScreen = this.screens.menuScreen;
   private connectCode: string | undefined;
-  private client: CSClient | undefined;
+  public client: CSClient | undefined;
   private dc = testDc;
   private clientUpdatecallBack = (res: csResponse) => {
     this.ClientUpdate(res);
