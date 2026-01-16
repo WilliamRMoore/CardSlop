@@ -11,7 +11,7 @@ import {
 type playerId = string;
 type cardId = number;
 
-type message =
+export type message =
   | waitForplayersMsg
   | plyrJoinMsg
   | startMsg
@@ -96,7 +96,7 @@ export type csResponse =
 
 type waitResp = {
   respType: 'wait_for_players';
-  data: undefined;
+  data: { playersInLobby: playerId[] };
 };
 
 type playCardResp = {
@@ -106,7 +106,7 @@ type playCardResp = {
 
 export type plyrJoinResp = {
   respType: 'plr_join_resp';
-  data: { playerTyingToJoinId: string };
+  data: { playersInLobby: playerId[] };
 };
 
 type playerHands = { playerId: string; cardIds: number[] }[];
@@ -144,9 +144,9 @@ type roundWinnerSelectedResp = {
 };
 
 type playerReadyCountResp = {
-  respType: 'player_ready_count';
+  respType: 'player_ready_list';
   data: {
-    playerCount: number;
+    playersReady: string[];
   };
 };
 
@@ -165,9 +165,10 @@ type errorCode =
   | 'card_not_in_judging_pile'
   | 'game_not_in_roundWinnerSelected_state'
   | 'you_are_already_ready'
+  | 'player_already_in_lobby'
   | 'you_are_not_the_host';
 
-type invalidRequestRsep = {
+export type invalidRequestRsep = {
   respType: 'invalid_request';
   data: { playerId: string; message: string; error: errorCode };
 };
@@ -184,7 +185,11 @@ type gameStates =
 
 export type responseCallBack = (response: csResponse) => void;
 
-export class CSServer {
+export interface ICSServer {
+  PostMessage: (msg: message) => void;
+}
+
+export class CSServer implements ICSServer {
   private hostId: string;
   private captionDeck: captionCardDeck;
   private memeDeck: memeCardDeck;
@@ -249,7 +254,10 @@ export class CSServer {
         }
         if (this.gameState === 'ready' || this.gameState === 'never_started') {
           this.gameState = 'waiting';
-          this.callBack({ respType: 'wait_for_players', data: undefined });
+          this.callBack({
+            respType: 'wait_for_players',
+            data: { playersInLobby: this.playerIds },
+          });
           break;
         }
         this.callBack({
@@ -272,12 +280,22 @@ export class CSServer {
             },
           });
         }
+        if (this.playerIds.includes(msg.data.playerJoiningId)) {
+          this.callBack({
+            respType: 'invalid_request',
+            data: {
+              playerId: msg.data.playerJoiningId,
+              message: 'Player already in lobby',
+              error: 'player_already_in_lobby',
+            },
+          });
+        }
         this.playerIds.push(msg.data.playerJoiningId);
         this.capCardHands.set(msg.data.playerJoiningId, []);
         this.cardsWon.set(msg.data.playerJoiningId, []);
         this.callBack({
           respType: 'plr_join_resp',
-          data: { playerTyingToJoinId: msg.data.playerJoiningId },
+          data: { playersInLobby: this.playerIds },
         });
         break;
       case 'start':
@@ -452,6 +470,7 @@ export class CSServer {
           });
           break;
         }
+        this.judgingPile.length = 0;
         this.cardsWon.get(selectedCapCard.pId)!.push(this.selectedMemeCard!);
         this.gameState = 'roundWinnerSelected';
         this.callBack({
@@ -483,8 +502,8 @@ export class CSServer {
         }
         this.playerReady.add(msg.data.playerId);
         this.callBack({
-          respType: 'player_ready_count',
-          data: { playerCount: this.playerReady.size },
+          respType: 'player_ready_list',
+          data: { playersReady: this.playerReady.values().toArray() },
         });
         if (this.playerReady.size === this.playerIds.length) {
           this.gameState = 'judgeSelect';
@@ -536,7 +555,7 @@ export class CSServer {
   }
 
   private shouldAdvanceToJudging(): boolean {
-    const playersInPlay = this.capCardHands.keys().toArray();
+    const playersInPlay = this.judgingPile.map((ps) => ps.pId);
     if (playersInPlay.length === this.playerIds.length - 1) {
       return true;
     }
@@ -545,16 +564,16 @@ export class CSServer {
 
   private makeDealResponse(): startResp {
     const respData = this.getPlayerHands();
-    this.pickRandomStartingJudge();
+    this.pickStartingJudge();
     return {
       respType: 'startResp',
       data: { playerHands: respData, judge: this.currentJudge! },
     };
   }
 
-  private pickRandomStartingJudge(): void {
-    this.currentJudge =
-      this.playerIds[Math.floor(Math.random() * this.playerIds.length)];
+  private pickStartingJudge(): void {
+    this.currentJudge = this.playerIds[0];
+    //this.playerIds[Math.floor(Math.random() * this.playerIds.length)];
   }
 
   private getPlayerHands(): playerHands {

@@ -10,6 +10,7 @@ const copyAssetsPlugin = {
         const assetsDir = 'src/assets';
         const outDir = 'public/decks';
         const deckNames = [];
+        const globalManifest = [];
 
         await fs.mkdir(outDir, { recursive: true });
 
@@ -25,14 +26,44 @@ const copyAssetsPlugin = {
 
             const files = await fs.readdir(sourceDeckDir);
 
+            const deckManifest = {
+              name: deck.name,
+              memes: [],
+              captions: [],
+            };
+
             for (const file of files) {
               const sourceFile = path.join(sourceDeckDir, file);
               const destFile = path.join(destDeckDir, file);
-              await fs.copyFile(sourceFile, destFile);
+
+              const ext = path.extname(file).toLowerCase();
+              if (file === 'captions.txt') {
+                const content = await fs.readFile(sourceFile, 'utf-8');
+                deckManifest.captions = content.split(/\r?\n/).filter((line) => line.trim() !== '');
+              } else if (file === 'captions.json') {
+                const content = await fs.readFile(sourceFile, 'utf-8');
+                deckManifest.captions = JSON.parse(content);
+              } else {
+                await fs.copyFile(sourceFile, destFile);
+                if (['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(ext)) {
+                  deckManifest.memes.push(file);
+                }
+              }
             }
+
+            await fs.writeFile(path.join(destDeckDir, 'manifest.json'), JSON.stringify(deckManifest, null, 2));
+            globalManifest.push({
+              name: deck.name,
+              path: `decks/${deck.name}/manifest.json`
+            });
+
             console.log(`Copied deck: ${deck.name}`);
           }
         }
+        await fs.writeFile('public/manifest.json', JSON.stringify(globalManifest, null, 2));
+        await fs.copyFile('src/index.html', 'public/index.html');
+        await fs.copyFile('src/test.html', 'public/test.html');
+        console.log('Copied index.html and test.html');
         console.log('Asset copying complete.');
 
         const tsContent = `export const deckNames: string[] = ${JSON.stringify(deckNames)};\n`;
