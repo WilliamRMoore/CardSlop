@@ -1,1 +1,1 @@
-export const deckNames: string[] = ["baseDeck","holdMyCosmo"];
+export const deckNames: string[] = ["baseDeck"];
